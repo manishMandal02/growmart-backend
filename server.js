@@ -1,11 +1,15 @@
-import express from 'express';
-import dotenv from 'dotenv';
-import colors from 'colors';
+const express = require('express');
+const dotenv = require('dotenv');
+const colors = require('colors');
 
-import connectDB from './Config/db.js';
-import productRoutes from './Routes/ProductRoutes.js';
-import userRoutes from './Routes/UserRoutes.js';
-import { notFoundError, errorHandler } from './Middleware/errorMiddleware.js';
+const { connectDB } = require('./Config/db');
+const productRoutes = require('./Routes/ProductRoutes');
+const userRoutes = require('./Routes/UserRoutes');
+const orderRoutes = require('./Routes/OrderRoutes');
+const {
+  notFoundError,
+  errorHandler,
+} = require('./Middleware/errorMiddleware.js');
 
 dotenv.config();
 
@@ -20,8 +24,12 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api/products', productRoutes);
-
 app.use('/api/users', userRoutes);
+app.use('/api/orders', orderRoutes);
+
+app.get('/api/config/paypal', (req, res) =>
+  res.send(process.env.PAYPAL_CLIENT_ID)
+);
 
 app.use(notFoundError);
 app.use(errorHandler);

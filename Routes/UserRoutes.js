@@ -1,13 +1,17 @@
-import express from 'express';
-const router = express.Router();
-import { protect } from '../Middleware/AuthMiddleware.js';
+const express = require('express');
 
-import {
+const router = express.Router();
+const { protect, admin } = require('../Middleware/AuthMiddleware');
+
+const {
   authUser,
+  deleteUser,
+  getAllUsers,
   getUserProfile,
   registerUser,
   updateUserProfile,
-} from '../Controller/UserController.js';
+  updateUserProfileAdmin,
+} = require('../Controller/UserController');
 
 router.post('/login', authUser);
 router
@@ -15,6 +19,10 @@ router
   .get(protect, getUserProfile)
   .put(protect, updateUserProfile);
 
-router.route('/').post(registerUser);
+router.route('/').post(registerUser).get(protect, admin, getAllUsers);
+router
+  .route('/:id')
+  .post(protect, admin, updateUserProfileAdmin)
+  .get(protect, admin, deleteUser);
 
-export default router;
+module.exports = router;
