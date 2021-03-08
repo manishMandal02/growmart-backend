@@ -1,6 +1,7 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const colors = require('colors');
+const cors = require('cors');
 
 const { connectDB } = require('./Config/db');
 const productRoutes = require('./Routes/ProductRoutes');
@@ -17,10 +18,12 @@ connectDB();
 
 const app = express();
 
+app.use(cors());
+
 app.use(express.json());
 
 app.get('/', (req, res) => {
-  res.send('API is running....');
+  res.send('Server is running....');
 });
 
 app.use('/api/products', productRoutes);
