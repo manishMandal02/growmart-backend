@@ -16,6 +16,7 @@ const {
   getProductsByBrand,
   getTopProducts,
   getRelatedProducts,
+  addProductReview,
 } = require('../Controller/ProductController');
 
 router
@@ -27,9 +28,10 @@ router.route('/category').get(getProductsByCategory);
 router.route('/brand').get(getProductsByBrand);
 router.route('/topproducts').get(getTopProducts);
 router.route('/relatedProducts').get(getRelatedProducts);
+router.route('/relatedProducts').get(getRelatedProducts);
+router.route('/:id/reviews').post(protect, addProductReview);
 
 router.route('/admin').get(getProductsAdmin);
-
 router.route('/image/upload').post(upload.single('image'), uploadImage);
 router.route('/image/update/:id').post(upload.single('image'), updateImage);
 

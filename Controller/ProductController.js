@@ -31,96 +31,60 @@ const getProducts = asyncHandler(async (req, res) => {
         ],
       }
     : {};
-  const sortBy = req.query.sortBy || '';
+  const sortBy = req.query.sortBy || 'latest';
   const page = Number(req.query.pageNumber) || 1;
   const pageSize = Number(req.query.pageSize) || 10;
-  const price = req.query.price ? req.query.price.split('-') : '';
+  const priceRange = req.query.priceFilter && req.query.priceFilter.split('-');
+  const price =
+    priceRange && Boolean(Number(priceRange[1]))
+      ? [Number(priceRange[0]), Number(priceRange[1])]
+      : [0, 10];
 
-  // console.log(price);
-  // console.log(sortBy);
-  // console.log(page);
-  // console.log(pageSize);
-  // console.log(keyword);
-  // if (price) {
-  //   const count = await Product.countDocuments({
-  //     price: { $gte: price[0], $lte: price[1] },
-  //   });
-
-  //   const products = await Product.find({
-  //     $and: [{ ...keyword }, { price: { $gte: price[0], $lte: price[1] } }],
-  //   })
-  //     .sort({ createdAt: -1 })
-  //     .limit(pageSize)
-  //     .skip(pageSize * (page - 1));
-  //   console.log(products);
-  //   // console.log(products, Math.ceil(count / pageSize));
-  //   res.json({ products, page, pages: Math.ceil(count / pageSize) });
-  // } else {
-  if (sortBy === 'latest') {
-    if (price[0] && price[1]) {
-      const count = await Product.countDocuments({
-        $and: [{ ...keyword }, { price: { $gte: price[0], $lte: price[1] } }],
-      });
-      const products = await Product.find({
-        $and: [{ ...keyword }, { price: { $gte: price[0], $lte: price[1] } }],
-      })
-        .sort({ createdAt: -1 })
-        .limit(pageSize)
-        .skip(pageSize * (page - 1));
-
-      // console.log(products, Math.ceil(count / pageSize));
-      res.json({ products, page, pages: Math.ceil(count / pageSize) });
-    } else {
-      // console.log(price);
-
-      const count = await Product.countDocuments({ ...keyword });
-
-      const products = await Product.find({ ...keyword })
-        .sort({ createdAt: -1 })
-        .limit(pageSize)
-        .skip(pageSize * (page - 1));
-
-      // console.log(products, Math.ceil(count / pageSize));
-      res.json({ products, page, pages: Math.ceil(count / pageSize) });
-      // }
-    }
-  }
-
-  if (sortBy === 'rating') {
-    const count = await Product.countDocuments({});
-    const products = await Product.find({ ...keyword })
-      .sort({ rating: -1 })
-      .limit(pageSize)
-      .skip(pageSize * (page - 1));
-    res.json({ products, page, pages: Math.ceil(count / pageSize) });
-  }
-
-  if (sortBy === 'priceLow') {
-    const count = await Product.countDocuments({});
-    const products = await Product.find({ ...keyword })
-      .sort({ price: 1 })
-      .limit(pageSize)
-      .skip(pageSize * (page - 1));
-    res.json({ products, page, pages: Math.ceil(count / pageSize) });
-  }
-
-  if (sortBy === 'priceHigh') {
-    const count = await Product.countDocuments({});
-    const products = await Product.find({ ...keyword })
-      .sort({ price: -1 })
-      .limit(pageSize)
-      .skip(pageSize * (page - 1));
-    res.json({ products, page, pages: Math.ceil(count / pageSize) });
-  }
+  const count = await Product.countDocuments({
+    $and: [
+      { ...keyword },
+      price[1] >= 10
+        ? { price: { $gte: price[0], $lte: Number.POSITIVE_INFINITY } }
+        : { price: { $gte: price[0], $lte: price[1] } },
+    ],
+  });
+  const products = await Product.find({
+    $and: [
+      { ...keyword },
+      price[1] >= 10
+        ? { price: { $gte: price[0], $lte: Number.POSITIVE_INFINITY } }
+        : { price: { $gte: price[0], $lte: price[1] } },
+    ],
+  })
+    .sort(
+      sortBy === 'latest'
+        ? { createdAt: -1 }
+        : sortBy === 'rating '
+        ? { rating: -1 }
+        : sortBy === 'priceLow'
+        ? { price: 1 }
+        : sortBy === 'priceHigh'
+        ? { price: -1 }
+        : {}
+    )
+    .limit(pageSize)
+    .skip(pageSize * (page - 1));
+  res.json({ products, page, pages: Math.ceil(count / pageSize) });
 });
 
 //@desc Fetch  procducts by category
 //@route GET /api/products/category
 //@access public
 const getProductsByCategory = expressAsyncHandler(async (req, res) => {
-  const sortBy = req.query.sortBy || '';
+  const sortBy = req.query.sortBy || 'latest';
   const page = Number(req.query.pageNumber) || 1;
   const pageSize = Number(req.query.pageSize) || 10;
+  const priceRange = req.query.priceFilter && req.query.priceFilter.split('-');
+  const price =
+    priceRange && Boolean(Number(priceRange[0]))
+      ? [Number(priceRange[0]), Number(priceRange[1])]
+      : [0, 10];
+
   const category = req.query.category
     ? {
         category: {
@@ -130,10 +94,22 @@ const getProductsByCategory = expressAsyncHandler(async (req, res) => {
       }
     : {};
 
-  console.log(category);
-
-  const count = await Product.countDocuments({ ...category });
-  const products = await Product.find({ ...category })
+  const count = await Product.countDocuments({
+    $and: [
+      { ...category },
+      price[1] >= 10
+        ? { price: { $gte: price[0], $lte: Number.POSITIVE_INFINITY } }
+        : { price: { $gte: price[0], $lte: price[1] } },
+    ],
+  });
+  const products = await Product.find({
+    $and: [
+      { ...category },
+      price[1] >= 10
+        ? { price: { $gte: price[0], $lte: Number.POSITIVE_INFINITY } }
+        : { price: { $gte: price[0], $lte: price[1] } },
+    ],
+  })
     .sort(
       sortBy === 'latest'
         ? { createdAt: -1 }
@@ -147,7 +123,6 @@ const getProductsByCategory = expressAsyncHandler(async (req, res) => {
     )
     .limit(pageSize)
     .skip(pageSize * (page - 1));
-  console.log(products);
   res.json({ products, page, pages: Math.ceil(count / pageSize) });
 });
 
@@ -155,9 +130,14 @@ const getProductsByCategory = expressAsyncHandler(async (req, res) => {
 //@route GET /api/products/brand
 //@access public
 const getProductsByBrand = expressAsyncHandler(async (req, res) => {
-  const sortBy = req.query.sortBy || '';
+  const sortBy = req.query.sortBy || 'latest';
   const page = Number(req.query.pageNumber) || 1;
   const pageSize = Number(req.query.pageSize) || 10;
+  const priceRange = req.query.priceFilter && req.query.priceFilter.split('-');
+  const price =
+    priceRange && Boolean(Number(priceRange[0]))
+      ? [Number(priceRange[0]), Number(priceRange[1])]
+      : [0, 10];
   const brand = req.query.brand
     ? {
         brand: {
@@ -167,10 +147,22 @@ const getProductsByBrand = expressAsyncHandler(async (req, res) => {
       }
     : {};
 
-  console.log(brand);
-
-  const count = await Product.countDocuments({ ...brand });
-  const products = await Product.find({ ...brand })
+  const count = await Product.countDocuments({
+    $and: [
+      { ...brand },
+      price[1] >= 10
+        ? { price: { $gte: price[0], $lte: Number.POSITIVE_INFINITY } }
+        : { price: { $gte: price[0], $lte: price[1] } },
+    ],
+  });
+  const products = await Product.find({
+    $and: [
+      { ...brand },
+      price[1] >= 10
+        ? { price: { $gte: price[0], $lte: Number.POSITIVE_INFINITY } }
+        : { price: { $gte: price[0], $lte: price[1] } },
+    ],
+  })
     .sort(
       sortBy === 'latest'
         ? { createdAt: -1 }
@@ -184,7 +176,6 @@ const getProductsByBrand = expressAsyncHandler(async (req, res) => {
     )
     .limit(pageSize)
     .skip(pageSize * (page - 1));
-  console.log(products);
   res.json({ products, page, pages: Math.ceil(count / pageSize) });
 });
 
@@ -222,6 +213,42 @@ const getProductById = asyncHandler(async (req, res) => {
   const product = await Product.findById(req.params.id);
   if (product) {
     res.json(product);
+  } else {
+    res.status(404);
+    throw new Error('Product not found');
+  }
+});
+
+//@desc Add product review
+//@route POST /api/products/:id/reviews
+//@access public
+const addProductReview = asyncHandler(async (req, res) => {
+  const { comment, rating } = req.body;
+  const product = await Product.findById(req.params.id);
+  if (product) {
+    const alreadyReviewed = product.reviews.find(
+      (r) => r.user.toString() === req.user._id.toString()
+    );
+    if (alreadyReviewed) {
+      res.status(400);
+      throw new Error('Product already reviewed');
+    }
+    const review = {
+      name: req.user.name,
+      rating: Number(rating),
+      comment,
+      user: req.user._id,
+    };
+    product.reviews.push(review);
+
+    (product.numReviews = product.reviews.length),
+      (product.rating =
+        product.reviews.reduce((acc, item) => item.rating + acc, 0) /
+        product.reviews.length);
+
+    await product.save();
+    res.status(201);
+    res.json({ message: 'Review added' });
   } else {
     res.status(404);
     throw new Error('Product not found');
@@ -286,8 +313,6 @@ const createProductController = asyncHandler(async (req, res) => {
 //@access public/admin
 const updateProductController = asyncHandler(async (req, res) => {
   const product = await Product.findById(req.params.id);
-  // console.log(req.body);
-  // console.log(req.body.updatedImage, req.body.updateImageId);
   if (product) {
     product.name = req.body.name || product.name;
     product.description = req.body.description || product.description;
@@ -315,7 +340,6 @@ const deleteProductController = asyncHandler(async (req, res) => {
 
   if (product) {
     data = await cloudinary.uploader.destroy(product.imageId);
-    console.log(data);
     await product.remove();
     res.json({ message: 'success' });
   } else {
@@ -347,18 +371,14 @@ const uploadImage = asyncHandler(async (req, res) => {
 //@route POST /api/products/image/update/:id
 //@access public
 const updateImage = asyncHandler(async (req, res) => {
-  // console.log('reached');
   const imageReceived = req.file.path;
   const product = await Product.findById(req.params.id);
-  // console.log(product);
   try {
     data = await cloudinary.uploader.destroy(product.imageId);
-    console.log(data, product.imageId);
 
     const uploadedResponse = await cloudinary.uploader.upload(imageReceived, {
       upload_preset: 'product_images',
     });
-    // console.log(uploadedResponse);
     res.json({
       image: uploadedResponse.secure_url,
       imageId: uploadedResponse.public_id,
@@ -372,6 +392,7 @@ const updateImage = asyncHandler(async (req, res) => {
 module.exports = {
   uploadImage,
   getProductsAdmin,
+  addProductReview,
   getProductsByCategory,
   getProductsByBrand,
   getTopProducts,

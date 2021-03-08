@@ -41,7 +41,7 @@ const orderSchmena = mongoose.Schema(
         type: String,
         required: true,
       },
-      postalCode: {
+      zipcode: {
         type: String,
         required: true,
       },
