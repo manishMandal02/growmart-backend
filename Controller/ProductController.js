@@ -81,7 +81,7 @@ const getProductsByCategory = expressAsyncHandler(async (req, res) => {
   const pageSize = Number(req.query.pageSize) || 10;
   const priceRange = req.query.priceFilter && req.query.priceFilter.split('-');
   const price =
-    priceRange && Boolean(Number(priceRange[0]))
+    priceRange && Boolean(Number(priceRange[1]))
       ? [Number(priceRange[0]), Number(priceRange[1])]
       : [0, 10];
 
@@ -135,9 +135,10 @@ const getProductsByBrand = expressAsyncHandler(async (req, res) => {
   const pageSize = Number(req.query.pageSize) || 10;
   const priceRange = req.query.priceFilter && req.query.priceFilter.split('-');
   const price =
-    priceRange && Boolean(Number(priceRange[0]))
+    priceRange && Boolean(Number(priceRange[1]))
       ? [Number(priceRange[0]), Number(priceRange[1])]
       : [0, 10];
+
   const brand = req.query.brand
     ? {
         brand: {
