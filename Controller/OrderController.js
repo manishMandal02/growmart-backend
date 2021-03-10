@@ -13,6 +13,7 @@ const createOrder = asyncHandler(async (req, res) => {
     taxPrice,
     shippingPrice,
     totalPrice,
+    paymentResult,
   } = req.body;
   if (orderItems && orderItems.length === 0) {
     res.status(400);
@@ -28,6 +29,14 @@ const createOrder = asyncHandler(async (req, res) => {
       taxPrice,
       shippingPrice,
       totalPrice,
+      isPaid: true,
+      paidAt: Date.now(),
+      paymentresult: {
+        id: paymentResult.id,
+        status: paymentResult.status,
+        update_time: paymentResult.update_time,
+        email_address: paymentResult.payer.email_address,
+      },
     });
 
     const createdOrder = await order.save();
@@ -58,14 +67,14 @@ const updateOrderToPaid = asyncHandler(async (req, res) => {
   const order = await Order.findById(req.params.id);
 
   if (order) {
-    order.isPaid = true;
-    order.paidAt = Date.now();
-    order.paymentresult = {
-      id: req.body.id,
-      status: req.body.status,
-      update_time: req.body.update_time,
-      email_address: req.body.payer.email_address,
-    };
+    (order.isPaid = true),
+      (order.paidAt = Date.now()),
+      (order.paymentresult = {
+        id: req.body.id,
+        status: req.body.status,
+        update_time: req.body.update_time,
+        email_address: req.body.payer.email_address,
+      });
 
     const updatedOrder = await order.save();
 
