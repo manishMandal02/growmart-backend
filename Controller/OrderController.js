@@ -4,7 +4,7 @@ const { Order } = require('../Model/OrderModel');
 //@desc Save Order to database
 //@route POST /api/orders
 //@access private
-const addOrderItems = asyncHandler(async (req, res) => {
+const createOrder = asyncHandler(async (req, res) => {
   const {
     orderItems,
     shippingAddress,
@@ -131,5 +131,5 @@ module.exports = {
   getOrderById,
   getLoggedInUsersOrders,
   updateOrderToPaid,
-  addOrderItems,
+  createOrder,
 };
