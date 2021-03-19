@@ -1,4 +1,3 @@
-const expressAsyncHandler = require('express-async-handler');
 const asyncHandler = require('express-async-handler');
 const { cloudinary } = require('../Config/Cloudinary');
 const { Product } = require('../Model/ProductModel');
@@ -75,7 +74,7 @@ const getProducts = asyncHandler(async (req, res) => {
 //@desc Fetch  procducts by category
 //@route GET /api/products/category
 //@access public
-const getProductsByCategory = expressAsyncHandler(async (req, res) => {
+const getProductsByCategory = asyncHandler(async (req, res) => {
   const sortBy = req.query.sortBy || 'latest';
   const page = Number(req.query.pageNumber) || 1;
   const pageSize = Number(req.query.pageSize) || 10;
@@ -129,7 +128,7 @@ const getProductsByCategory = expressAsyncHandler(async (req, res) => {
 //@desc Fetch procducts by brand
 //@route GET /api/products/brand
 //@access public
-const getProductsByBrand = expressAsyncHandler(async (req, res) => {
+const getProductsByBrand = asyncHandler(async (req, res) => {
   const sortBy = req.query.sortBy || 'latest';
   const page = Number(req.query.pageNumber) || 1;
   const pageSize = Number(req.query.pageSize) || 10;
@@ -183,7 +182,7 @@ const getProductsByBrand = expressAsyncHandler(async (req, res) => {
 //@desc Fetch top procducts
 //@route GET /api/products/top products
 //@access public
-const getTopProducts = expressAsyncHandler(async (req, res) => {
+const getTopProducts = asyncHandler(async (req, res) => {
   const pageSize = Number(req.query.limit) || 12;
   const products = await Product.find({}).sort({ rating: -1 }).limit(pageSize);
   res.json({ products });
@@ -192,7 +191,7 @@ const getTopProducts = expressAsyncHandler(async (req, res) => {
 //@desc Fetch top procducts
 //@route GET /api/products/top products
 //@access public
-const getRelatedProducts = expressAsyncHandler(async (req, res) => {
+const getRelatedProducts = asyncHandler(async (req, res) => {
   const category = req.query.category
     ? {
         category: {
