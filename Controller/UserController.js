@@ -143,7 +143,7 @@ const updateUserProfileAdmin = asyncHandler(async (req, res) => {
     user.email = req.body.email || user.email;
     user.isAdmin = req.body.isAdmin;
 
-    const updatedUser = await user.save();
+    await user.save();
 
     res.json({ message: 'success' });
   } else {
