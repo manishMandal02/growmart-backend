@@ -7,10 +7,7 @@ const { connectDB } = require('./Config/db');
 const productRoutes = require('./Routes/ProductRoutes');
 const userRoutes = require('./Routes/UserRoutes');
 const orderRoutes = require('./Routes/OrderRoutes');
-const {
-  notFoundError,
-  errorHandler,
-} = require('./Middleware/errorMiddleware.js');
+const { notFoundError, errorHandler } = require('./Middleware/errorMiddleware.js');
 
 dotenv.config();
 
@@ -30,18 +27,11 @@ app.use('/api/products', productRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/orders', orderRoutes);
 
-app.get('/api/config/paypal', (req, res) =>
-  res.send(process.env.PAYPAL_CLIENT_ID)
-);
+app.get('/api/config/paypal', (req, res) => res.send(process.env.PAYPAL_CLIENT_ID));
 
 app.use(notFoundError);
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(
-  PORT,
-  console.log(
-    `Server running in ${process.env.NODE_ENV} mode on Port ${PORT}`.green.bold
-  )
-);
+app.listen(PORT, console.log(`Server running in ${process.env.NODE_ENV} mode on Port ${PORT}`.green.bold));

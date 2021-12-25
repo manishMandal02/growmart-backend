@@ -2,13 +2,13 @@
   "name": "grow-mart-backend",
   "version": "1.0.0",
   "description": "grow mart backend",
-  "main": "server.js",
+  "main": "app.js",
   "engines": {
     "node": "14.15.4"
   },
   "scripts": {
-    "start": "node server",
-    "server": " nodemon server",
+    "start": "node app",
+    "server": " nodemon app",
     "data:import": "node seeder",
     "data:delete": "node seeder -d"
   },
