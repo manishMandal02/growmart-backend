@@ -35,9 +35,7 @@ const getProducts = asyncHandler(async (req, res) => {
   const pageSize = Number(req.query.pageSize) || 10;
   const priceRange = req.query.priceFilter && req.query.priceFilter.split('-');
   const price =
-    priceRange && Boolean(Number(priceRange[1]))
-      ? [Number(priceRange[0]), Number(priceRange[1])]
-      : [0, 10];
+    priceRange && Boolean(Number(priceRange[1])) ? [Number(priceRange[0]), Number(priceRange[1])] : [0, 10];
 
   const count = await Product.countDocuments({
     $and: [
@@ -80,9 +78,7 @@ const getProductsByCategory = asyncHandler(async (req, res) => {
   const pageSize = Number(req.query.pageSize) || 10;
   const priceRange = req.query.priceFilter && req.query.priceFilter.split('-');
   const price =
-    priceRange && Boolean(Number(priceRange[1]))
-      ? [Number(priceRange[0]), Number(priceRange[1])]
-      : [0, 10];
+    priceRange && Boolean(Number(priceRange[1])) ? [Number(priceRange[0]), Number(priceRange[1])] : [0, 10];
 
   const category = req.query.category
     ? {
@@ -134,9 +130,7 @@ const getProductsByBrand = asyncHandler(async (req, res) => {
   const pageSize = Number(req.query.pageSize) || 10;
   const priceRange = req.query.priceFilter && req.query.priceFilter.split('-');
   const price =
-    priceRange && Boolean(Number(priceRange[1]))
-      ? [Number(priceRange[0]), Number(priceRange[1])]
-      : [0, 10];
+    priceRange && Boolean(Number(priceRange[1])) ? [Number(priceRange[0]), Number(priceRange[1])] : [0, 10];
 
   const brand = req.query.brand
     ? {
@@ -188,7 +182,7 @@ const getTopProducts = asyncHandler(async (req, res) => {
   res.json({ products });
 });
 
-//@desc Fetch top procducts
+//@desc Fetch top products
 //@route GET /api/products/top products
 //@access public
 const getRelatedProducts = asyncHandler(async (req, res) => {
@@ -206,7 +200,7 @@ const getRelatedProducts = asyncHandler(async (req, res) => {
   res.json({ products });
 });
 
-//@desc Fetch single procduct by id
+//@desc Fetch single products by id
 //@route GET /api/products/:id
 //@access public
 const getProductById = asyncHandler(async (req, res) => {
@@ -226,9 +220,7 @@ const addProductReview = asyncHandler(async (req, res) => {
   const { comment, rating } = req.body;
   const product = await Product.findById(req.params.id);
   if (product) {
-    const alreadyReviewed = product.reviews.find(
-      (r) => r.user.toString() === req.user._id.toString()
-    );
+    const alreadyReviewed = product.reviews.find((r) => r.user.toString() === req.user._id.toString());
     if (alreadyReviewed) {
       res.status(400);
       throw new Error('Product already reviewed');
@@ -242,9 +234,7 @@ const addProductReview = asyncHandler(async (req, res) => {
     product.reviews.push(review);
 
     (product.numReviews = product.reviews.length),
-      (product.rating =
-        product.reviews.reduce((acc, item) => item.rating + acc, 0) /
-        product.reviews.length);
+      (product.rating = product.reviews.reduce((acc, item) => item.rating + acc, 0) / product.reviews.length);
 
     await product.save();
     res.status(201);
@@ -257,7 +247,7 @@ const addProductReview = asyncHandler(async (req, res) => {
 
 //########admin#############
 
-//@desc Fetch all procducts Admin
+//@desc Fetch all products Admin
 //@route GET /api/product/admin
 //@access public
 const getProductsAdmin = asyncHandler(async (req, res) => {
@@ -276,16 +266,7 @@ const getProductsAdmin = asyncHandler(async (req, res) => {
 //@route POST /api/products/
 //@access public/admin
 const createProductController = asyncHandler(async (req, res) => {
-  const {
-    image,
-    imageId,
-    name,
-    description,
-    price,
-    countInStock,
-    brand,
-    category,
-  } = req.body;
+  const { image, imageId, name, description, price, countInStock, brand, category } = req.body;
 
   const product = await Product.create({
     user: req.user._id,
@@ -308,7 +289,7 @@ const createProductController = asyncHandler(async (req, res) => {
   }
 });
 
-//@desc CreaUpdatete product
+//@desc update product
 //@route POST /api/products/:id
 //@access public/admin
 const updateProductController = asyncHandler(async (req, res) => {
