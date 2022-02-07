@@ -46,14 +46,14 @@ const getUserProfile = asyncHandler(async (req, res) => {
 //@access Public
 const registerUser = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
-  console.log('here');
+  console.log(name, email);
   const userExists = await User.findOne({ email });
 
   if (userExists) {
     res.status(400);
     throw new Error('User already exists');
   }
-
+  console.log('Creating...');
   const user = await User.create({
     name,
     email,
